@@ -1,9 +1,10 @@
 "use server";
 
 import { uploadImage } from "@/lib/cloudinary";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 
-const { storePost } = require("@/lib/posts");
+const { storePost, updatePostLikeStatus } = require("@/lib/posts");
 
 export async function createPost(prevFormData, formData) {
   const data = Object.fromEntries(formData.entries());
@@ -48,3 +49,11 @@ export async function createPost(prevFormData, formData) {
   });
   redirect("/feed");
 }
+
+//////////////////////////////
+
+export const togglePostLikeStatus = async (postId) => {
+  await updatePostLikeStatus(postId, 2);
+  revalidatePath("/feed");
+  //revalidateTag("feed");
+};
